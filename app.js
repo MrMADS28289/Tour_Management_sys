@@ -66,6 +66,21 @@ const tourSchema = mongoose.Schema({
     timestams: true
 })
 
+// mongoos midlewar for saving data: pre / post
+tourSchema.pre('save', function (next) {
+    if (this.quantity === 0) {
+        this.status = "out-of-stock"
+    }
+
+    next();
+})
+
+// tourSchema.post('save', function (doc, next) {
+//     console.log('After save data');
+
+//     next();
+// })
+
 // SCHEMA --> MODEL --> QUERY
 
 // Model
@@ -74,8 +89,7 @@ const Tour = mongoose.model('Tour', tourSchema);
 // Query
 app.post('/api/v1/tour', async (req, res, next) => {
     try {
-        const tour = new Tour(req.body)
-        const result = await tour.save();
+        const result = await Tour.create(req.body);
 
         res.status(200).json({
             status: "success",
