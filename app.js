@@ -16,6 +16,11 @@ app.get("/", (req, res) => {
     res.send("Route is working! YaY!");
 });
 
+app.all("*", (req, res) => {
+    res.send("NO route found.");
+});
+
+
 module.exports = app;
 
 
