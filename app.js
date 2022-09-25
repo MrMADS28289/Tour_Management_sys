@@ -7,106 +7,17 @@ const mongoose = require('mongoose');
 app.use(express.json());
 app.use(cors());
 
-// Schema design
-const tourSchema = mongoose.Schema({
-    place: {
-        type: String,
-        required: true,
-        trim: true,
-        unique: true,
-        minLength: 2,
-        maxLength: 100
-    },
-    description: {
-        type: String,
-        required: true
-    },
-    price: {
-        type: Number,
-        required: true,
-        min: 0
-    },
-    quantity: {
-        type: Number,
-        required: true,
-        min: 0,
-        validate: {
-            validator: (value) => {
-                const isInteger = Number.isInteger(value);
-                if (isInteger) {
-                    return true
-                } else {
-                    return false
-                }
-            }
-        },
-        message: 'Quantity must be an integer.'
-    },
-    status: {
-        type: String,
-        required: true,
-        enum: {
-            values: ["in-stock", "out-of-stock", "discontinued"],
-            message: "Status can't be {VALUE}"
-        }
-    },
-    // host: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "hoster"
-    // },
-    // categories: {
-    //     name: {
-    //         type: String,
-    //         required: true
-    //     },
-    //     _id: mongoose.Schema.Types.ObjectId
-    // }
-
-}, {
-    timestams: true
-})
-
-// mongoos midlewar for saving data: pre / post
-tourSchema.pre('save', function (next) {
-    if (this.quantity === 0) {
-        this.status = "out-of-stock"
-    }
-
-    next();
-})
-
-// tourSchema.post('save', function (doc, next) {
-//     console.log('After save data');
-
-//     next();
-// })
-
-// SCHEMA --> MODEL --> QUERY
-
-// Model
-const Tour = mongoose.model('Tour', tourSchema);
+// Routes
+const tourRoute = require('./routes/v1/tour.route');
 
 // Query
-app.post('/api/v1/tour', async (req, res, next) => {
-    try {
-        const result = await Tour.create(req.body);
-
-        res.status(200).json({
-            status: "success",
-            message: "Data inserted successfully!",
-            data: result
-        });
-    } catch (error) {
-        res.status(400).json({
-            status: "fail",
-            message: "Data insert failed.",
-            error: error.message
-        })
-    }
-})
+app.use('/api/v1/tour', tourRoute);
 
 app.get("/", (req, res) => {
     res.send("Route is working! YaY!");
 });
 
 module.exports = app;
+
+
+// SCHEMA --> MODEL --> QUERY
