@@ -43,6 +43,10 @@ const tourSchema = mongoose.Schema({
             message: "Status can't be {VALUE}"
         }
     },
+    veiw: {
+        type: Number,
+        value: 0
+    },
     // host: {
     //     type: mongoose.Schema.Types.ObjectId,
     //     ref: "hoster"

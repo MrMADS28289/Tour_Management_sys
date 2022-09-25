@@ -1,5 +1,4 @@
-const { createTourService, getTourService } = require("../services/tour.services");
-
+const { createTourService, getAllToursService, getATourService, updateATourService, getTrendingTourService, getCheapestTourService } = require("../services/tour.services");
 
 exports.creatTour = async (req, res, next) => {
     try {
@@ -19,7 +18,7 @@ exports.creatTour = async (req, res, next) => {
     }
 }
 
-exports.getTour = async (req, res, next) => {
+exports.getAllTour = async (req, res, next) => {
     try {
         let filters = { ...req.query };
         const excludeFields = ["sort", "page", "limit"];
@@ -49,7 +48,7 @@ exports.getTour = async (req, res, next) => {
             queries.limit = Number(limit);
         }
 
-        const tours = await getTourService(filters, queries);
+        const tours = await getAllToursService(filters, queries);
 
         res.status(200).json({
             status: "success",
@@ -61,6 +60,94 @@ exports.getTour = async (req, res, next) => {
         res.status(400).json({
             status: "fail",
             message: "Data not found!.",
+            error: error.message
+        })
+    }
+}
+
+exports.getATour = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        // Tour.set(view)
+        const tour = await getATourService(id);
+        // console.log(req.query);
+
+        res.status(200).json({
+            status: "success",
+            message: "Data found successfully!",
+            data: tour
+        });
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Data not found!.",
+            error: error.message
+        })
+    }
+}
+
+exports.updateATour = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const result = await updateATourService(id, req.body);
+
+        if (result.modifiedCount) {
+            res.status(200).json({
+                status: "success",
+                message: "Tour detail update successfully!",
+                data: result
+            });
+        } else {
+            res.status(200).json({
+                status: "fail",
+                message: "tour details update faild.",
+                data: result
+            });
+        }
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Tour update faild!.",
+            error: error.message
+        })
+    }
+}
+
+exports.getTrendingTour = async (req, res, next) => {
+    try {
+        const tours = await getTrendingTourService();
+
+        res.status(200).json({
+            status: "success",
+            message: "Top veiwed Tour found!",
+            data: tours
+        })
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Tour found faild!.",
+            error: error.message
+        })
+    }
+}
+
+exports.getCheapestTour = async (req, res, next) => {
+    try {
+        const tours = await getCheapestTourService();
+
+        res.status(200).json({
+            status: "success",
+            message: "Cheapeast Tour found!",
+            data: tours
+        })
+
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: "Tour found faild!.",
             error: error.message
         })
     }
